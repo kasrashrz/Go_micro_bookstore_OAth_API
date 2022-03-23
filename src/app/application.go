@@ -23,5 +23,7 @@ func StartApplication() {
 	atHandler := http.NewHandler(atService)
 
 	router.GET("/oath/access_token/:access_token", atHandler.GetById)
+	router.POST("/oath/access_token", atHandler.Create)
+	//router.GET("/oath/access_token/:access_token", atHandler.GetById)
 	router.Run(":4444")
 }
