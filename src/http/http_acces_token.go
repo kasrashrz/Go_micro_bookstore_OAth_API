@@ -33,8 +33,8 @@ func (handler *accessTokenHandler) GetById(ctx *gin.Context) {
 
 func (handler *accessTokenHandler) Create(ctx *gin.Context) {
 	var accessToken access_token.AccessToken
-
-	if err := ctx.ShouldBindJSON(&accessToken); err != nil {
+	var request access_token.AccessTokenRequest
+	if err := ctx.ShouldBindJSON(&request); err != nil {
 		restError := errors.BadRequestError("invalid json body")
 		ctx.JSON(restError.Status, restError)
 		return

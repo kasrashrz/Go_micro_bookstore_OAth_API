@@ -27,7 +27,7 @@ func newUserRepository() RestUserRepository {
 
 func (repository *usersRepository) LoginUser(email string, password string) (*user.User, *errors.RestErr) {
 	request := user.UserLoginRequest{
-		Email:    email,
+		Username: email,
 		Password: password,
 	}
 	response := usersRestClient.Post("/users/login", request)
@@ -37,6 +37,7 @@ func (repository *usersRepository) LoginUser(email string, password string) (*us
 	if response.StatusCode > 299 {
 		var restErr errors.RestErr
 		err := json.Unmarshal(response.Bytes(), &restErr)
+
 		if err != nil {
 			return nil, errors.InternalServerError("invalid error interface when trying to login user")
 		}
