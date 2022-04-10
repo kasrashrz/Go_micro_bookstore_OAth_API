@@ -3,6 +3,7 @@ package http
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/kasrashrz/Go_micro_bookstore_OAth_API/src/domain/access_token"
+	access_token2 "github.com/kasrashrz/Go_micro_bookstore_OAth_API/src/services/access_token"
 	"github.com/kasrashrz/Go_micro_bookstore_OAth_API/src/utils/errors"
 	"net/http"
 	"strings"
@@ -14,10 +15,10 @@ type AccessTokenHandler interface {
 }
 
 type accessTokenHandler struct {
-	service access_token.Service
+	service access_token2.Service
 }
 
-func NewHandler(service access_token.Service) AccessTokenHandler {
+func NewHandler(service access_token2.Service) AccessTokenHandler {
 	return &accessTokenHandler{service: service}
 }
 
@@ -32,18 +33,17 @@ func (handler *accessTokenHandler) GetById(ctx *gin.Context) {
 }
 
 func (handler *accessTokenHandler) Create(ctx *gin.Context) {
-	var accessToken access_token.AccessToken
 	var request access_token.AccessTokenRequest
 	if err := ctx.ShouldBindJSON(&request); err != nil {
-		restError := errors.BadRequestError("invalid json body")
-		ctx.JSON(restError.Status, restError)
+		restErr := errors.BadRequestError("invalid json body")
+		ctx.JSON(restErr.Status, restErr)
 		return
 	}
 
-	if err := handler.service.Create(accessToken); err != nil {
+	accessToken, err := handler.service.Create(request)
+	if err != nil {
 		ctx.JSON(err.Status, err)
 		return
 	}
-
-	ctx.JSON(http.StatusOK, accessToken)
+	ctx.JSON(http.StatusCreated, accessToken)
 }

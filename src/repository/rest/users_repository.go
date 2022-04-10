@@ -21,16 +21,18 @@ type RestUserRepository interface {
 
 type usersRepository struct{}
 
-func newUserRepository() RestUserRepository {
+func NewUserRepository() RestUserRepository {
 	return &usersRepository{}
 }
 
 func (repository *usersRepository) LoginUser(email string, password string) (*user.User, *errors.RestErr) {
 	request := user.UserLoginRequest{
-		Username: email,
+		Email:    email,
 		Password: password,
 	}
+
 	response := usersRestClient.Post("/users/login", request)
+
 	if response == nil || response.Response == nil {
 		return nil, errors.InternalServerError("invalid rest client response when trying to login user")
 	}

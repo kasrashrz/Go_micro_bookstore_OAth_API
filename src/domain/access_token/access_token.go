@@ -1,6 +1,8 @@
 package access_token
 
 import (
+	"fmt"
+	"github.com/kasrashrz/Go_micro_bookstore_OAth_API/src/utils/crypto_utils"
 	"github.com/kasrashrz/Go_micro_bookstore_OAth_API/src/utils/errors"
 	"strings"
 	"time"
@@ -24,9 +26,15 @@ type AccessTokenRequest struct {
 }
 
 func (accessToken *AccessTokenRequest) Validate() *errors.RestErr {
-	if accessToken.GrantType != grantTypePassword || accessToken.GrantType != grantTypeClientCredentials{
+	switch accessToken.GrantType {
+	case grantTypePassword:
+		break
+	case grantTypeClientCredentials:
+		break
+	default:
 		return errors.BadRequestError("invalid grant_type parameter")
 	}
+
 	//TODO: Validate parameters for each grant type
 	return nil
 }
@@ -55,8 +63,9 @@ func (accessToken *AccessToken) Validate() *errors.RestErr {
 	return nil
 }
 
-func GetNewAccessToken() AccessToken {
+func GetNewAccessToken(userId int64) AccessToken {
 	return AccessToken{
+		UserId:  userId,
 		Expires: time.Now().UTC().Add(expirationTime * time.Hour).Unix(),
 	}
 }
@@ -66,4 +75,8 @@ func (accessToken AccessToken) IsExpired() bool {
 	expirationTime := time.Unix(accessToken.Expires, 0)
 
 	return now.After(expirationTime)
+}
+
+func (at *AccessToken) Generate() {
+	at.AccessToken = crypto_utils.GetMd5(fmt.Sprintf("at-%d-%d-ran", at.UserId, at.Expires))
 }

@@ -17,6 +17,7 @@ func NewRepository() DbRepository {
 	return &dbRepository{}
 }
 
+
 type DbRepository interface {
 	GetById(string) (*access_token.AccessToken, *errors.RestErr)
 	Create(token access_token.AccessToken) *errors.RestErr
