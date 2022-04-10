@@ -12,6 +12,7 @@ func init() {
 	// connect to the cluster
 	cluster := gocql.NewCluster("127.0.0.1")
 	cluster.Keyspace = "oath"
+	cluster.Port = 9042
 	cluster.Consistency = gocql.Quorum
 
 	var err error

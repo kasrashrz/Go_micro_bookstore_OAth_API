@@ -10,7 +10,7 @@ import (
 
 const (
 	expirationTime             = 24
-	grantTypePassword          = "password"
+	//grantTypePassword          = "password"
 	grantTypeClientCredentials = "client_credential"
 )
 
@@ -27,15 +27,14 @@ type AccessTokenRequest struct {
 
 func (accessToken *AccessTokenRequest) Validate() *errors.RestErr {
 	switch accessToken.GrantType {
-	case grantTypePassword:
-		break
 	case grantTypeClientCredentials:
 		break
+
 	default:
 		return errors.BadRequestError("invalid grant_type parameter")
 	}
 
-	//TODO: Validate parameters for each grant type
+	//TODO: Validate parameters for each grant_type
 	return nil
 }
 
