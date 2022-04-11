@@ -1,27 +1,44 @@
 package cassandra
 
 import (
-	"github.com/gocql/gocql"
-	"time"
+	"database/sql"
+	"fmt"
+	_ "github.com/go-sql-driver/mysql"
+	"log"
+)
+
+const (
+	mysql_users_usersname = "mysql_users_username"
+	mysql_users_passwords = "mysql_users_password"
+	mysql_users_host      = "mysql_users_host"
+	mysql_users_db        = "mysql_users_db"
 )
 
 var (
-	session *gocql.Session
+	Client   *sql.DB
+	username = "root"
+	password = ""
+	host     = "localhost"
+	db       = "cappuccino"
 )
 
 func init() {
-	// connect to the cluster
-	cluster := gocql.NewCluster("127.0.0.1")
-	cluster.Keyspace = "oath"
-	cluster.Consistency = gocql.Quorum
-	cluster.Timeout = 50 * time.Second
 
+	datasourceName := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8",
+		username,
+		password,
+		host,
+		db,
+	)
+	log.Println("about to connect to %s", datasourceName)
 	var err error
-	if session, err = cluster.CreateSession(); err != nil {
+	Client, err = sql.Open("mysql", datasourceName)
+	if err != nil {
 		panic(err)
 	}
-}
+	if err = Client.Ping(); err != nil {
+		panic(err)
+	}
+	log.Println("connected to database")
 
-func GetSession() *gocql.Session {
-	return session
 }

@@ -40,18 +40,18 @@ func (service *service) GetById(accessTokenId string) (*access_token.AccessToken
 }
 
 func (service *service) Create(request access_token.AccessTokenRequest) (*access_token.AccessToken, *errors.RestErr) {
-	if err := request.Validate(); err != nil {
-		return nil, err
-	}
-	//TODO: Support both grant types: client_credentials and password
-	// Authenticate the user against the Users API:
-	user, err := service.restUsersRepo.LoginUser(request.Username, request.Password)
-	if err != nil {
-		return nil, err
-	}
-
-	// Generate a new access token:
-	at := access_token.GetNewAccessToken(user.Id)
+	//if err := request.Validate(); err != nil {
+	//	return nil, err
+	//}
+	////TODO: Support both grant types: client_credentials and password
+	//// Authenticate the user against the Users API:
+	//user, err := service.restUsersRepo.LoginUser(request.Username, request.Password)
+	//if err != nil {
+	//	return nil, err
+	//}
+	//
+	//// Generate a new access token:
+	at := access_token.GetNewAccessToken(1)
 	at.Generate()
 
 	// Save the new access token in Cassandra:
