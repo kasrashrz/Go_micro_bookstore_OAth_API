@@ -5,6 +5,7 @@ import (
 	"github.com/kasrashrz/Go_micro_bookstore_OAth_API/src/clients/cassandra"
 	"github.com/kasrashrz/Go_micro_bookstore_OAth_API/src/domain/access_token"
 	"github.com/kasrashrz/Go_micro_bookstore_OAth_API/src/utils/errors"
+	"time"
 )
 
 const (
@@ -28,12 +29,15 @@ type dbRepository struct {
 
 func (repo *dbRepository) GetById(id string) (*access_token.AccessToken, *errors.RestErr) {
 	var result access_token.AccessToken
-	if err := cassandra.GetSession().Query(`SELECT access_token, client_id, expires, user_id FROM access_tokens WHERE access_token = ?`, "aa").Scan(
-		&result.AccessToken,
+	sp := &gocql.SimpleSpeculativeExecution{NumAttempts: 4, TimeoutDelay: 200 * time.Second}
+	err := cassandra.GetSession().Query("SELECT user_id FROM access_tokens WHERE access_token = ?", "aa").SetSpeculativeExecutionPolicy(sp).Scan(
+		//&result.AccessToken,
 		&result.UserId,
-		&result.ClientId,
-		&result.Expires,
-	); err != nil {
+		//&result.ClientId,
+		//&result.Expires,
+	)
+	defer cassandra.GetSession().Close()
+	if err != nil {
 		if err == gocql.ErrNotFound {
 			return nil, errors.NotFoundError("no access token found with given id")
 		}
